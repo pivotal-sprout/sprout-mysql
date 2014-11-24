@@ -20,13 +20,13 @@ end
 package 'mysql'
 
 ruby_block 'copy mysql plist to ~/Library/LaunchAgents' do
+  destination = "#{node['sprout']['home']}/Library/LaunchAgents/homebrew.mxcl.mysql.plist"
   block do
     active_mysql = Pathname.new('/usr/local/bin/mysql').realpath
     plist_location = (active_mysql + '../../' + 'homebrew.mxcl.mysql.plist').to_s
-    destination = "#{node['sprout']['home']}/Library/LaunchAgents/homebrew.mxcl.mysql.plist"
     system("cp #{plist_location} #{destination} && chown #{node['current_user']} #{destination}") || fail("Couldn't find the plist")
   end
-  not_if { File.exist?("#{node['sprout']['home']}/Library/LaunchAgents/homebrew.mxcl.mysql.plist") }
+  not_if { File.exist?(destination) }
 end
 
 ruby_block 'mysql_install_db' do
