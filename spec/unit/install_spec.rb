@@ -13,14 +13,20 @@ describe 'sprout-mysql::install' do
     expect(runner).to install_package('mysql')
   end
 
-  it 'uses a default root password of `password`' do
+  it "uses a default root password of 'password'" do
     runner.converge(described_recipe)
-    expect(runner).to run_execute('mysqladmin -uroot password password')
+    expect(runner).to run_execute("mysqladmin -uroot password 'password'")
   end
 
   it 'uses the specified root password' do
     runner.node.set['sprout']['mysql']['root_password'] = 'custompassword'
     runner.converge(described_recipe)
-    expect(runner).to run_execute('mysqladmin -uroot password custompassword')
+    expect(runner).to run_execute("mysqladmin -uroot password 'custompassword'")
+  end
+
+  it 'uses the specified root password when the password is blank' do
+    runner.node.set['sprout']['mysql']['root_password'] = ''
+    runner.converge(described_recipe)
+    expect(runner).to run_execute("mysqladmin -uroot password ''")
   end
 end
